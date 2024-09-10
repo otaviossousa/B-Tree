@@ -1,128 +1,10 @@
-/* Pseudo code for B-tree search
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 406
-
-B-Tree-Search(x, k)
-1. i = 1
-2. while i <= x.n and k > x.keyi
-3.     i = i + 1
-4. if i <= x.n and k == x.keyi
-5.     return (x, i)
-6. elseif x.leaf
-7.     return NIL
-8. else DISK-READ(x.ci)
-9. return BTree-Search(x.ci, k)
-
-*/
-
-/* Pseudo code for B-tree create
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 406-407
-
-B-Tree-Create(T)
-1. x = ALLOCATE-NODE()
-2. x.leaf = TRUE
-3. x.n = 0
-4. DISK-WRITE(x)
-5. T.root = x
-
- */
-
-/* Pseudo code for B-tree split child
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 407-408
-
-B-Tree-Split-Child(x, i)
-1. z = ALLOCATE-NODE()
-2. y = x.ci
-3. z.leaf = y.leaf
-4. z.n = t - 1
-5. for j = 1 to t - 1
-6.     z.keyj = y.keyj+t
-7. if not y.leaf
-8.     for j = 1 to t
-9.         z.cj = y.cj+t
-10. y.n = t - 1
-11. for j = x.n + 1 downto i + 1
-12.     x.cj+1 = x.cj
-13. x.ci+1 = z
-14. for j = x.n downto i
-15.     x.keyj+1 = x.keyj
-16. x.keyi = y.keyt
-17. x.n = x.n + 1
-18. DISK-WRITE(y)
-19. DISK-WRITE(z)
-20. DISK-WRITE(x)
-
-*/
-
-/* Pseudo code for B-tree insert
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 409
-
-B-Tree-Insert(T, k)
-1. r = T.root
-2. if r.n == 2t - 1
-3.     s = ALLOCATE-NODE()
-4.     T.root = s
-5.     s.leaf = FALSE
-6.     s.n = 0
-7.     s.c1 = r
-8.     B-Tree-Split-Child(s, 1)
-9.     B-Tree-Insert-Nonfull(s, k)
-10. else B-Tree-Insert-Nonfull(r, k)
-
- */
-
-/* Pseudo code for B-tree insert nonfull
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 410
-
-B-Tree-Insert-Nonfull(x, k)
-1. i = x.n
-2. if x.leaf
-3.     while i >= 1 and k < x.keyi
-4.         x.keyi+1 = x.keyi
-5.         i = i - 1
-6.     x.keyi+1 = k
-7.     x.n = x.n + 1
-8.     DISK-WRITE(x)
-9. else while i >= 1 and k < x.keyi
-10.       i = i - 1
-11.     i = i + 1
-12.     DISK-READ(x.ci)
-13.     if x.ci.n == 2t - 1
-14.         B-Tree-Split-Child(x, i, x.ci)
-15.         if k > x.keyi
-16.             i = i + 1
-17.     B-Tree-Insert-Nonfull(x.ci, k)
-
- */
-
-
-/* Pseudo code for B-tree delete
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 413
-
- */
-
-
-/*
-Fonte do código: https://www.programiz.com/dsa/deletion-from-a-b-tree
-Explicacao do codigo em video: https://www.youtube.com/watch?v=AH7zF9PuIAw
-*/
+// Deleting a key from a B-tree in C
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 2 // 3
-#define MIN 1 // 2
+#define MAX 3
+#define MIN 2
 
 struct BTreeNode {
   int item[MAX + 1], count;
@@ -433,12 +315,16 @@ void traversal(struct BTreeNode *myNode) {
 int main() {
   int item, ch;
 
-  insertion(1);
-  insertion(2);
-  insertion(3);
-  insertion(4);
-  insertion(5);
-  insertion(6);
+  insertion(8);
+  insertion(9);
+  insertion(10);
+  insertion(11);
+  insertion(15);
+  insertion(16);
+  insertion(17);
+  insertion(18);
+  insertion(20);
+  insertion(23);
 
   traversal(root);
 
