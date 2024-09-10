@@ -506,7 +506,7 @@ int main() {
         printf("Visualizacao da B-Tree:\n");
         // Esclher modelo de visualização
 
-        // printTreeWithArrows(root, 0);
+        // printTree(root, 0);
         // printTreeWithArrows(root, 0);
         printf("\n");
         break;
