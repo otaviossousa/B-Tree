@@ -115,14 +115,13 @@ p. 413
 
 /*
 Fonte do código: https://www.programiz.com/dsa/deletion-from-a-b-tree
-Explicacao do codigo em video: https://www.youtube.com/watch?v=AH7zF9PuIAw
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 2 // 3
-#define MIN 1 // 2
+#define MAX 3
+#define MIN 2
 
 struct BTreeNode {
   int item[MAX + 1], count;
@@ -399,6 +398,7 @@ void delete (int item, struct BTreeNode *myNode) {
   return;
 }
 
+// Search operation
 void searching(int item, int *pos, struct BTreeNode *myNode) {
   if (!myNode) {
     return;
@@ -419,6 +419,7 @@ void searching(int item, int *pos, struct BTreeNode *myNode) {
   return;
 }
 
+// Não utilizado
 void traversal(struct BTreeNode *myNode) {
   int i;
   if (myNode) {
@@ -430,19 +431,93 @@ void traversal(struct BTreeNode *myNode) {
   }
 }
 
+void printTree(struct BTreeNode *node, int level) {
+  int i;
+  if (node) {
+    for (i = node->count - 1; i >= 0; i--) {
+      printTree(node->linker[i + 1], level + 1);
+
+      for (int j = 0; j < level; j++) {
+        printf("    ");
+      }
+      printf("%d\n", node->item[i + 1]);
+    }
+    printTree(node->linker[0], level + 1);
+  }
+}
+
+void printTreeWithArrows(struct BTreeNode *node, int level) {
+  if (node != NULL) {
+    int i;
+
+    for (i = node->count - 1; i >= 0; i--) {
+      printTreeWithArrows(node->linker[i + 1], level + 1);
+
+      for (int j = 0; j < level; j++) {
+        printf("    ");
+      }
+
+      printf("-> %d\n", node->item[i + 1]);
+    }
+
+    printTreeWithArrows(node->linker[0], level + 1);
+  }
+}
+
+
 int main() {
-  int item, ch;
+  int choice, item, pos;
 
-  insertion(1);
-  insertion(2);
-  insertion(3);
-  insertion(4);
-  insertion(5);
-  insertion(6);
+  printf("B-Tree Implementation Test\n");
+  while (1) {
+    printf("\nMenu:\n");
+    printf("1. Inserir um valor\n");
+    printf("2. Excluir um valor\n");
+    printf("3. Buscar um valor\n");
+    printf("4. Exibir a B-Tree\n");
+    printf("5. Sair\n");
+    printf("Escolha uma opcao:");
+    scanf("%d", &choice);
 
-  traversal(root);
+    switch (choice) {
+      case 1:
+        printf("Digite o valor para inserir:");
+        scanf("%d", &item);
+        insertion(item);
+        printf("\n");
+      break;
 
-  delete (20, root);
-  printf("\n");
-  traversal(root);
+      case 2:
+        printf("Digite o valor para excluir:");
+        scanf("%d", &item);
+        delete(item, root);
+        printf("\n");
+        break;
+
+      case 3:
+        printf("Digite o valor para buscar:");
+        scanf("%d", &item);
+        pos = 0;
+        searching(item, &pos, root);
+        printf("\n");
+        break;
+
+      case 4:
+        printf("Visualizacao da B-Tree:\n");
+        // Esclher modelo de visualização
+
+        // printTreeWithArrows(root, 0);
+        // printTreeWithArrows(root, 0);
+        printf("\n");
+        break;
+
+      case 5:
+        printf("Encerrando o programa.\n");
+        exit(0);
+
+      default:
+        printf("Opcao invalida. Tente novamente.\n");
+    }
+  }
+  return 0;
 }
