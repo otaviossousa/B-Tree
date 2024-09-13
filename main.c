@@ -1,121 +1,4 @@
-/* Pseudo code for B-tree search
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 406
-
-B-Tree-Search(x, k)
-1. i = 1
-2. while i <= x.n and k > x.keyi
-3.     i = i + 1
-4. if i <= x.n and k == x.keyi
-5.     return (x, i)
-6. elseif x.leaf
-7.     return NIL
-8. else DISK-READ(x.ci)
-9. return BTree-Search(x.ci, k)
-
-*/
-
-/* Pseudo code for B-tree create
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 406-407
-
-B-Tree-Create(T)
-1. x = ALLOCATE-NODE()
-2. x.leaf = TRUE
-3. x.n = 0
-4. DISK-WRITE(x)
-5. T.root = x
-
- */
-
-/* Pseudo code for B-tree split child
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 407-408
-
-B-Tree-Split-Child(x, i)
-1. z = ALLOCATE-NODE()
-2. y = x.ci
-3. z.leaf = y.leaf
-4. z.n = t - 1
-5. for j = 1 to t - 1
-6.     z.keyj = y.keyj+t
-7. if not y.leaf
-8.     for j = 1 to t
-9.         z.cj = y.cj+t
-10. y.n = t - 1
-11. for j = x.n + 1 downto i + 1
-12.     x.cj+1 = x.cj
-13. x.ci+1 = z
-14. for j = x.n downto i
-15.     x.keyj+1 = x.keyj
-16. x.keyi = y.keyt
-17. x.n = x.n + 1
-18. DISK-WRITE(y)
-19. DISK-WRITE(z)
-20. DISK-WRITE(x)
-
-*/
-
-/* Pseudo code for B-tree insert
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 409
-
-B-Tree-Insert(T, k)
-1. r = T.root
-2. if r.n == 2t - 1
-3.     s = ALLOCATE-NODE()
-4.     T.root = s
-5.     s.leaf = FALSE
-6.     s.n = 0
-7.     s.c1 = r
-8.     B-Tree-Split-Child(s, 1)
-9.     B-Tree-Insert-Nonfull(s, k)
-10. else B-Tree-Insert-Nonfull(r, k)
-
- */
-
-/* Pseudo code for B-tree insert nonfull
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 410
-
-B-Tree-Insert-Nonfull(x, k)
-1. i = x.n
-2. if x.leaf
-3.     while i >= 1 and k < x.keyi
-4.         x.keyi+1 = x.keyi
-5.         i = i - 1
-6.     x.keyi+1 = k
-7.     x.n = x.n + 1
-8.     DISK-WRITE(x)
-9. else while i >= 1 and k < x.keyi
-10.       i = i - 1
-11.     i = i + 1
-12.     DISK-READ(x.ci)
-13.     if x.ci.n == 2t - 1
-14.         B-Tree-Split-Child(x, i, x.ci)
-15.         if k > x.keyi
-16.             i = i + 1
-17.     B-Tree-Insert-Nonfull(x.ci, k)
-
- */
-
-
-/* Pseudo code for B-tree delete
-
-Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). Introduction to algorithms (3rd ed.). MIT Press.
-p. 413
-
- */
-
-
-/*
-Fonte do código: https://www.programiz.com/dsa/deletion-from-a-b-tree
-*/
+// Fonte do código: https://www.programiz.com/dsa/deletion-from-a-b-tree
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -130,6 +13,18 @@ struct BTreeNode {
 
 struct BTreeNode *root;
 
+/* Pseudo code node creation
+
+B-Tree-CreateNode(item, child)
+1. newNode = ALLOCATE-NODE()
+2. newNode.item[1] = item
+3. newNode.count = 1
+4. newNode.linker[0] = root
+5. newNode.linker[1] = child
+6. RETURN newNode
+
+*/
+
 // Node creation
 struct BTreeNode *createNode(int item, struct BTreeNode *child) {
   struct BTreeNode *newNode;
@@ -140,6 +35,20 @@ struct BTreeNode *createNode(int item, struct BTreeNode *child) {
   newNode->linker[1] = child;
   return newNode;
 }
+
+/* Pseudo code add valu to the node
+
+B-Tree-AddValToNode(item, pos, node, child)
+1. j = node.count
+2. WHILE j > pos
+3.   node.item[j + 1] = node.item[j]
+4.   node.linker[j + 1] = node.linker[j]
+5.   j = j - 1
+6. node.item[j + 1] = item[j]
+7. node.linker[j + 1] = child[j]
+8. node.count++
+
+*/
 
 // Add value to the node
 void addValToNode(int item, int pos, struct BTreeNode *node,
@@ -154,6 +63,31 @@ void addValToNode(int item, int pos, struct BTreeNode *node,
   node->linker[j + 1] = child;
   node->count++;
 }
+
+/* Pseudo code Split the node
+
+B-Tree-SplitNode(item, pval, pos, node, child, newNode)
+1. IF pos > MIN THEN
+2.     median = MIN + 1
+3.   ELSE
+4.     median = MIN
+5. newNode = ALLOCATE-NODE()
+6. j = median + 1
+7. WHILE j <= MAX
+8.      newNode.item[j - median] = node.item[j]
+9.      newNode.linker[j - median] = node.linker[j]
+10.     j = j + 1
+11. node.count = median
+12. newNode.count = MAX - median
+13. IF pos <= MIN THEN
+14.     B-Tree-AddValToNode(item, pos, node, child)
+15.   ELSE
+16.     B-Tree-AddValToNode(item, pos - median, newNode, child)
+17. pval = node.item[node.count]
+18. newNode.linker[0] = node.linker[node.count]
+19. node.count = node.count - 1
+
+*/
 
 // Split the node
 void splitNode(int item, int *pval, int pos, struct BTreeNode *node,
@@ -184,6 +118,34 @@ void splitNode(int item, int *pval, int pos, struct BTreeNode *node,
   (*newNode)->linker[0] = node->linker[node->count];
   node->count--;
 }
+
+/* Pseudo code Set the value in the node
+
+B-Tree-SetValueInNode(item, pval, node, child)
+1. IF node IS NULL THEN
+2.     *pval = item
+3.     *child = NULL
+4.     RETURN 1
+5. IF item < node.item[1] THEN
+6.     pos = 0
+7.   ELSE
+8.     FOR pos = node.count DOWNTO 1
+9.     IF item < node.item[pos] THEN
+10.       pos = pos - 1
+11.    ELSE
+12.      BREAK
+13.    IF item == node.item[pos] THEN
+14.       PRINT "Duplicates not allowed"
+15.       RETURN 0
+16. IF B-Tree-SetValueInNode(item, pval, node.linker[pos], child) THEN
+17.     IF node.count < MAX THEN
+18.        B-Tree-AddValToNode(*pval, pos, node, *child)
+19.     ELSE
+20.        B-Tree-SplitNode(*pval, pval, pos, node, *child, child)
+21.        RETURN 1
+22. RETURN 0
+
+*/
 
 // Set the value in the node
 int setValueInNode(int item, int *pval,
@@ -216,6 +178,17 @@ int setValueInNode(int item, int *pval,
   }
   return 0;
 }
+
+/* Pseudo code for insertion 
+
+B-Tree-Insertion(item)
+1. flag, i = 0
+2. child = NULL
+3. flag = B-Tree-SetValueInNode(item, &i, root, &child)
+4. IF flag THEN
+5.   root = B-Tree-CreateNode(i, child)
+
+*/
 
 // Insertion operation
 void insertion(int item) {
@@ -344,6 +317,40 @@ void adjustNode(struct BTreeNode *myNode, int pos) {
   }
 }
 
+/* Pseudo code for delete
+
+B-Tree-DeleteValueFromNode(item, myNode)
+1. pos = 0
+2. flag = 0
+3. IF myNode THEN
+4.     IF item < myNode->item[1] THEN
+5.        pos = 0
+6.        flag = 0
+7.     ELSE
+8.        FOR pos = myNode->count DOWNTO 1 DO
+9.           IF item < myNode->item[pos] THEN
+10.              BREAK
+11.        IF item == myNode->item[pos] THEN
+12.           flag = 1
+13.        ELSE
+14.           flag = 0
+15.     IF flag THEN
+16.        IF myNode->linker[pos - 1] THEN
+17.           B-Tree-CopySuccessor(myNode, pos)
+18.           flag = B-Tree-DeleteValueFromNode(myNode->item[pos], myNode->linker[pos])
+19.           IF flag == 0 THEN
+20.              PRINT "Given data is not present in B-Tree"
+21.        ELSE
+22.           B-Tree-RemoveValue(myNode, pos)
+23.     ELSE
+24.        flag = B-Tree-DeleteValueFromNode(item, myNode->linker[pos])
+25.     IF myNode->linker[pos] THEN
+26.        IF myNode->linker[pos]->count < MIN THEN
+27.           B-Tree-AdjustNode(myNode, pos)
+28. RETURN flag
+
+*/
+
 // Delete a value from the node
 int delValFromNode(int item, struct BTreeNode *myNode) {
   int pos, flag = 0;
@@ -398,6 +405,27 @@ void delete (int item, struct BTreeNode *myNode) {
   return;
 }
 
+/* Pseudo code for search
+
+B-Tree-Search(item, pos, myNode)
+1. IF NOT myNode THEN
+2.   RETURN
+3.
+4. IF item < myNode->item[1] THEN
+5.   *pos = 0
+6. ELSE
+7.   FOR *pos = myNode->count DOWNTO 1 DO
+8.      IF item < myNode->item[*pos] THEN
+9.         BREAK
+10.   IF item == myNode->item[*pos] THEN
+11.      PRINT item "present in B-tree"
+12.      RETURN
+13.
+14. B-Tree-Search(item, pos, myNode->linker[*pos])
+15. RETURN
+
+*/
+
 // Search operation
 void searching(int item, int *pos, struct BTreeNode *myNode) {
   if (!myNode) {
@@ -431,6 +459,19 @@ void traversal(struct BTreeNode *myNode) {
   }
 }
 
+/* Pseudo code for printTree
+
+B-Tree-PrintTree(node, level)
+1. IF node THEN
+2.   FOR i = node->count - 1 DOWNTO 0 DO
+3.      B-Tree-PrintTree(node->linker[i + 1], level + 1)
+4.      FOR j = 0 TO level - 1 DO
+5.         PRINT "    "
+6.      PRINT node->item[i + 1]
+7.   B-Tree-PrintTree(node->linker[0], level + 1)
+
+*/
+
 void printTree(struct BTreeNode *node, int level) {
   int i;
   if (node) {
@@ -445,25 +486,6 @@ void printTree(struct BTreeNode *node, int level) {
     printTree(node->linker[0], level + 1);
   }
 }
-
-void printTreeWithArrows(struct BTreeNode *node, int level) {
-  if (node != NULL) {
-    int i;
-
-    for (i = node->count - 1; i >= 0; i--) {
-      printTreeWithArrows(node->linker[i + 1], level + 1);
-
-      for (int j = 0; j < level; j++) {
-        printf("    ");
-      }
-
-      printf("-> %d\n", node->item[i + 1]);
-    }
-
-    printTreeWithArrows(node->linker[0], level + 1);
-  }
-}
-
 
 int main() {
   int choice, item, pos;
@@ -504,10 +526,7 @@ int main() {
 
       case 4:
         printf("Visualizacao da B-Tree:\n");
-        // Esclher modelo de visualização
-
-        // printTree(root, 0);
-        // printTreeWithArrows(root, 0);
+        printTree(root, 0);
         printf("\n");
         break;
 
